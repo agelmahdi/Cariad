@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">CARIAD</string>
+    <string name="title_activity_maps">CARIAD</string>
+    <string name="station">Station: </string>
+    <string name="address">Address: </string>
+    <string name="points">Charging points: </string>
+    <string name="current_position">Current position</string>
+    <string name="network_failure">Network failure</string>
+    <string name="somthing_went_wrong">Something went wrong</string>
+    <string name="stations_details">Charging station details</string>
+    <string name="cancel">Cancel</string>
+</resources>
