@@ -12,10 +12,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.agelmahdi.cariad.databinding.FragmentMapsBinding
 import com.agelmahdi.cariad.poi_feature.domain.model.POI
+import com.agelmahdi.cariad.poi_feature.domain.model.POIsState
 import com.agelmahdi.cariad.poi_feature.util.Constance
 import com.agelmahdi.cariad.poi_feature.util.Tags
 import com.agelmahdi.cariad.poi_feature.util.Utils
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -25,7 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class MapsFragment : Fragment(), GoogleMap.OnMarkerClickListener,OnMapReadyCallback {
+class MapsFragment : Fragment(), GoogleMap.OnMarkerClickListener, OnMapReadyCallback {
 
     private var _binding: FragmentMapsBinding? = null
 
@@ -41,38 +41,38 @@ class MapsFragment : Fragment(), GoogleMap.OnMarkerClickListener,OnMapReadyCallb
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(requireActivity()).get(POIsViewModel::class.java)
+        binding.mapView.onCreate(savedInstanceState)
+        binding.mapView.getMapAsync(this)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMapsBinding.inflate(inflater, container, false)
-        val view = binding.root
-        binding.mapView.onCreate(savedInstanceState)
-        binding.mapView.getMapAsync(this)
-
-        return view
+        return binding.root
     }
 
     private fun collectFlowStream() {
-        lifecycleScope.launch(Dispatchers.Main) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.stateFlow.collectLatest { state ->
-                    if (!state.hasError) {
-                        map.clear()
-                        state.data?.forEach {
-                            Utils.createMarker(
-                                map,
-                                it.address?.latitude!!,
-                                it.address.longitude!!,
-                                it.operatorInfo?.title,
-                                it.numberOfPoints?.toString() + ", " + it.address.title
-                            )?.apply {
-                                tag = it
-                            }
-                        }
-                    }
+                    updateMapMarkers(state)
                 }
+            }
+        }
+    }
+
+    private fun updateMapMarkers(state: POIsState) {
+        map.clear()
+        state.data?.forEach {
+            Utils.createMarker(
+                map,
+                it.address?.latitude!!,
+                it.address.longitude!!,
+                it.operatorInfo?.title,
+                it.numberOfPoints?.toString() + ", " + it.address.title
+            )?.apply {
+                tag = it
             }
         }
     }
@@ -124,6 +124,7 @@ class MapsFragment : Fragment(), GoogleMap.OnMarkerClickListener,OnMapReadyCallb
         binding.mapView.onDestroy()
 
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         binding.mapView.onDestroy()
@@ -134,7 +135,11 @@ class MapsFragment : Fragment(), GoogleMap.OnMarkerClickListener,OnMapReadyCallb
         map = googleMap
 
         val initialLocation = LatLng(Constance.LATITUDE, Constance.LONGITUDE)
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialLocation, Constance.CAMERA_ZOOM))
+        googleMap.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                initialLocation, Constance.CAMERA_ZOOM
+            )
+        )
         googleMap.setOnMarkerClickListener(this)
 
         collectFlowStream()

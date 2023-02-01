@@ -24,7 +24,7 @@ class POIDTOTest {
     fun `for POIs NumberOfPoints, IsNotNull should return POI with NumberOfPoints`() {
         val poiDTO = POIDTO(
             address = mock(AddressDTO::class.java),
-            operatorInfo = mock(OperatorDTO::class.java),
+            operator = mock(OperatorDTO::class.java),
             numberOfPoints = 1
         )
 

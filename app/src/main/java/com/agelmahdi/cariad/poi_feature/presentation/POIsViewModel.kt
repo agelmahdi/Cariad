@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class POIsViewModel @Inject constructor(
-    private val getPOIsInfo: PoiUseCase
+    private val getPOIsUC: PoiUseCase
 ) : ViewModel() {
 
     private val _stateFlow = MutableStateFlow(POIsState())
@@ -30,12 +30,12 @@ class POIsViewModel @Inject constructor(
         poiJob?.cancel()
         poiJob = viewModelScope.launch(Dispatchers.IO) {
             while (isActive) {
-                getPOIsInfo.fetch().collect {
+                getPOIsUC.fetch().collect {
                     when (it) {
                         is Resource.Success -> _stateFlow.value = POIsState(data = it.data)
                         is Resource.Error -> _stateFlow.value =
-                            POIsState(hasError = true, errorMessage = it.message)
-                        is Resource.Loading -> _stateFlow.value = POIsState(isLoading = true)
+                            POIsState(hasError = true, errorMessage = it.message, data = it.data)
+                        is Resource.Loading -> _stateFlow.value = POIsState(isLoading = true, data = it.data)
                     }
                 }
                 delay(TIME_DELAY)

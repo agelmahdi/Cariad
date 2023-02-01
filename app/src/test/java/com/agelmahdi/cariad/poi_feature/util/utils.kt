@@ -1,5 +1,6 @@
 package com.agelmahdi.cariad.poi_feature.util
 
+import com.agelmahdi.cariad.core.util.Resource
 import com.agelmahdi.cariad.poi_feature.data.remote.dto.AddressDTO
 import com.agelmahdi.cariad.poi_feature.data.remote.dto.OperatorDTO
 import com.agelmahdi.cariad.poi_feature.data.remote.dto.POIDTO
@@ -33,7 +34,7 @@ object utils {
                 latitude = 0.0,
                 longitude = 0.0
             ),
-            operatorInfo = OperatorDTO(
+            operator = OperatorDTO(
                 title = "title"
             ),
             numberOfPoints = 0

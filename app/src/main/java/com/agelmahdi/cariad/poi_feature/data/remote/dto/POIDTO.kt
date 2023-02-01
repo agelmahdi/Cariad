@@ -9,7 +9,7 @@ data class POIDTO(
     @SerializedName("AddressInfo")
     val address: AddressDTO?,
     @SerializedName("OperatorInfo")
-    val operatorInfo: OperatorDTO?,
+    val operator: OperatorDTO?,
     @SerializedName("NumberOfPoints")
     val numberOfPoints: Int?
 
@@ -23,7 +23,7 @@ data class POIDTO(
                 0.0,
                 0.0
             ),
-            operatorInfo = operatorInfo?.toOperatorInfo() ?: Operator("Not Found"),
+            operatorInfo = operator?.toOperatorInfo() ?: Operator("Not Found"),
 
             numberOfPoints = numberOfPoints ?: 0,
         )

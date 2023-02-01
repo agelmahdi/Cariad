@@ -8,5 +8,5 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 class FakePoiUseCase(): PoiUseCase {
     private val fakeFlow = MutableSharedFlow<Resource<List<POI>>>()
     suspend fun emit(value: Resource<List<POI>>) = fakeFlow.emit(value)
-    override fun fetch(): Flow<Resource<List<POI>>> = fakeFlow
+    override suspend fun fetch(): Flow<Resource<List<POI>>> = fakeFlow
 }

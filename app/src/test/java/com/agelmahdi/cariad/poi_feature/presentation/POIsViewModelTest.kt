@@ -42,8 +42,10 @@ class POIsViewModelTest {
     @Test
     fun `for success resource, data must be available`() = runTest {
         Mockito.`when`(poisAPI.getPOIsInfo()).thenReturn(utils.mockPOIResponse())
-        val result = fakePOIRepository.getPOIsData().body()?.map { it.toPOIs() }
-        fakePoiUseCase.emit(Resource.Success(result))
+        val result = fakePOIRepository.getPOIData()
+        result.collect{
+            fakePoiUseCase.emit(Resource.Success(it.data))
+        }
 
         assertThat(viewModel.stateFlow.value.data).isNotNull()
         assertThat(viewModel.stateFlow.value.hasError).isFalse()
